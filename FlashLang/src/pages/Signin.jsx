@@ -1,7 +1,20 @@
 import Header from "../components/header";
 import { motion } from "framer-motion"
+import { useGoogleLogin } from '@react-oauth/google';
+import { useNavigate } from 'react-router-dom'
+
 
 export default function Signin(){
+
+        const navigate = useNavigate()
+
+        const login = useGoogleLogin({
+            onSuccess: (tokenResponse) => {
+                console.log(tokenResponse);
+                navigate('home');
+            }
+        });
+
     return(
         <>
             <div className="flex justify-center mt-20 h-screen overflow-x-hidden">
@@ -24,7 +37,9 @@ export default function Signin(){
         </div>
 
         <div className="text-center">
-        <motion.button whileTap={{scale: 0.9}}
+        <motion.button 
+        onClick={() => login()}
+        whileTap={{scale: 0.9}}
         initial={{ scale: 0 }}
         animate={{scale: 1 }}
         transition={{
