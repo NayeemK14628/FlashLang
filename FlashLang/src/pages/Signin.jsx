@@ -2,17 +2,29 @@ import Header from "../components/header";
 import { motion } from "framer-motion"
 import { useGoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom'
-
+import axios from "axios";
 
 export default function Signin(){
 
         const navigate = useNavigate()
 
         const login = useGoogleLogin({
-            onSuccess: (tokenResponse) => {
-                console.log(tokenResponse);
-                navigate('home');
-            }
+            onSuccess: async (response) => {
+                try {
+                    const res = await axios.get(
+                        "https://www.googleapis.com/oauth2/v3/userinfo",
+                        {
+                            headers: {
+                                Authorization: `Bearer ${response.access_token}`,
+                            },
+                        }
+                    );
+                    console.log(res);
+                    navigate('/home', { state: { profilePicture: res.data.picture, userName: res.data.given_name} }); 
+                }   catch (err) {
+                    console.log(err);
+                }
+            },
         });
 
     return(
@@ -31,7 +43,7 @@ export default function Signin(){
         }}
         whileHover={{scale: 1.1}} 
         onHoverEnd={{scale: 1}}
-        className="text-6xl text-green-600">
+        className="text-6xl text-sky-600">
           Welcome to FlashLang!
         </motion.h1>
         </div>
@@ -48,7 +60,7 @@ export default function Signin(){
           damping: 20,
         }}
         whileHover={{scale: 1.1}}
-         className="bg-green-600 w-45 h-20 px-3 rounded-full text-4xl text-white-100 font-bold tracking-tight">
+         className="bg-sky-600 w-45 h-20 px-3 rounded-full text-4xl text-white-100 font-bold tracking-tight">
           Sign In With Google
         </motion.button>
 
@@ -63,7 +75,7 @@ export default function Signin(){
           damping: 20,
         }}
          whileHover={{scale: 1.1}}
-         className="bg-slate-950 w-30 h-10 px-3 mt-10 rounded-full text-xl text-green-600 font-bold tracking-tight">
+         className="bg-slate-950 w-30 h-10 px-3 mt-10 rounded-full text-xl text-sky-600 font-bold tracking-tight">
           New User?
         </motion.button>
         </div>
